@@ -2,10 +2,10 @@ import {validate} from "../validation/validation.js";
 import {
     createCategoryValidation,
     getCategoryValidation,
-    searchCategoryValidation
+    searchCategoryValidation, updateCategoryValidation
 } from "../validation/category-validation.js";
 import {prismaClient} from "../application/database.js";
-import category from "../controller/category-controller.js";
+import {ResponseError} from "../error/response-error.js";
 
 const create = async (request) => {
     const category = validate(createCategoryValidation, request);
@@ -77,6 +77,61 @@ const getDetail = async(categoryId) => {
             updatedAt: true,
         }
     })
+
+    if (!category) {
+        throw new ResponseError(404, "category is not found");
+    }
+
+    return category
 }
 
-export default {create, get}
+const update = async (request) => {
+    const category = validate(updateCategoryValidation, request);
+
+    const totalInDatabase = await prismaClient.category.count({
+        where: {
+            id: category.id,
+        }
+    })
+
+    if (totalInDatabase !== 1) {
+        throw new ResponseError(404, "category is invalid or not found");
+    }
+
+    return prismaClient.category.update({
+        where: {
+            id: category.id,
+        },
+        data: {
+            name: category.name,
+        },
+        select:{
+            id: true,
+            name: true,
+            createdAt: true,
+            updatedAt: true,
+        }
+    })
+}
+
+const remove = async (categoryId) => {
+    categoryId = validate(getCategoryValidation, categoryId)
+
+    const totalInDatabase = await prismaClient.category.count({
+        where: {
+            id: categoryId,
+        }
+    })
+
+    if (totalInDatabase !== 1) {
+        throw new ResponseError(404, "category is invalid or not found");
+    }
+
+    return prismaClient.category.delete({
+        where:{
+            id: categoryId,
+        }
+    })
+}
+
+export default {create, get, getDetail, remove, update}

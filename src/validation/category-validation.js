@@ -8,7 +8,12 @@ const createCategoryValidation = Joi.object({
     })
 })
 
-const getCategoryValidation = Joi.String().required();
+const updateCategoryValidation = Joi.object({
+    id: Joi.string().required(),
+    name: Joi.string().max(100).required(),
+});
+
+const getCategoryValidation = Joi.string().required();
 
 const searchCategoryValidation = Joi.object({
     page: Joi.number().min(1).positive().default(1),
@@ -16,4 +21,4 @@ const searchCategoryValidation = Joi.object({
     name: Joi.string().optional(),
 })
 
-export {createCategoryValidation, searchCategoryValidation, getCategoryValidation}
+export {createCategoryValidation, searchCategoryValidation, getCategoryValidation, updateCategoryValidation}
