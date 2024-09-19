@@ -6,7 +6,7 @@ import productController from "../controller/product-controller.js";
 import upload from "../middleware/upload.js";
 
 const userRouter = new express.Router();
-// userRouter.use(authMiddleware);
+userRouter.use(authMiddleware);
 
 // User API
 userRouter.post('/api/users/logout' ,userController.logout);

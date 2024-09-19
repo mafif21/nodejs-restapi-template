@@ -60,7 +60,6 @@ export const getProducts = async(req, res, next) => {
 export const updateProduct = async(req, res, next) => {
     try{
         const request = req.body;
-        console.log(req.body)
         const productId = req.params.productId;
         request.id = productId;
 
