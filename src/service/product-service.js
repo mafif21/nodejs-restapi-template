@@ -7,6 +7,8 @@ import {
 } from "../validation/product-validation.js";
 import {prismaClient} from "../application/database.js";
 import {ResponseError} from "../error/response-error.js";
+import path from "path";
+import fs from "fs";
 
 const create = async (request) => {
     const product = validate(createProductValidation, request)
@@ -21,6 +23,7 @@ const create = async (request) => {
                     name: true,
                 }
             },
+            image: true,
             createdAt: true,
             updatedAt: true,
         }
@@ -100,15 +103,25 @@ const get = async (request) => {
 
 const update = async (request) => {
     const product = validate(updateProductValidation, request)
+    console.log(product)
 
-    const totalInDatabase = await prismaClient.product.count({
+    const foundProduct = await prismaClient.product.findUnique({
         where: {
             id: product.id,
         }
     })
 
-    if (totalInDatabase !== 1) {
+    if (!foundProduct) {
         throw new ResponseError(404, "product is invalid or not found");
+    }
+
+    if (product.image == null){
+        product.image = foundProduct.image
+    }else{
+        const existingFilePath = path.join(process.cwd(), "src/public/uploads", foundProduct.image);
+        if (fs.existsSync(existingFilePath)) {
+            fs.unlinkSync(existingFilePath);
+        }
     }
 
     return prismaClient.product.update({
@@ -119,6 +132,7 @@ const update = async (request) => {
             name: product.name,
             price: product.price,
             categoryId: product.categoryId,
+            image: product.image
         },
         select:{
             id: true,

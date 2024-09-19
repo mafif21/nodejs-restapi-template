@@ -3,9 +3,10 @@ import userController from "../controller/user-controller.js";
 import {authMiddleware} from "../middleware/auth-middleware.js";
 import categoryController from "../controller/category-controller.js";
 import productController from "../controller/product-controller.js";
+import upload from "../middleware/upload.js";
 
 const userRouter = new express.Router();
-userRouter.use(authMiddleware);
+// userRouter.use(authMiddleware);
 
 // User API
 userRouter.post('/api/users/logout' ,userController.logout);
@@ -18,10 +19,10 @@ userRouter.put('/api/categories/:categoryId/edit', categoryController.updateCate
 userRouter.delete('/api/categories/:categoryId', categoryController.deleteCategory);
 
 // Product API
-userRouter.post('/api/product/create', productController.create)
+userRouter.post('/api/product/create', upload.single("image"), productController.create)
 userRouter.get('/api/products', productController.getProducts)
 userRouter.get('/api/products/:productId', productController.getDetailProduct)
-userRouter.put('/api/products/:productId/edit', productController.updateProduct)
+userRouter.put('/api/products/:productId/edit', upload.single('image') ,productController.updateProduct)
 userRouter.delete('/api/products/:productId', productController.deleteProduct);
 
 export {

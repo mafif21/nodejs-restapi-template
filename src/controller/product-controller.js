@@ -1,15 +1,25 @@
 import productService from "../service/product-service.js";
+import fs from "fs";
+import path from "path";
 
 export const create = async(req, res, next) => {
     try{
         const request = req.body;
+        request.image = req.file.filename
+
         const result = await productService.create(request);
+
         res.status(201).json({
             status: 201,
             message: "success create new product",
             data: result
         })
     }catch (e) {
+        const filePath = path.join(process.cwd(), "src/public/uploads", req.file.filename);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+
         next(e)
     }
 }
@@ -49,9 +59,15 @@ export const getProducts = async(req, res, next) => {
 
 export const updateProduct = async(req, res, next) => {
     try{
-        const productId = req.params.productId;
         const request = req.body;
+        console.log(req.body)
+        const productId = req.params.productId;
         request.id = productId;
+
+        if (req.file){
+            console.log(req.file)
+            request.image = req.file.filename
+        }
 
         const result = await productService.update(request);
         res.status(200).json({
@@ -60,6 +76,11 @@ export const updateProduct = async(req, res, next) => {
             data: result
         })
     }catch (e) {
+        const filePath = path.join(process.cwd(), "src/public/uploads", req.file.filename);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+
         next(e)
     }
 }
@@ -68,7 +89,13 @@ export const deleteProduct = async(req, res, next) => {
     try{
         const productId = req.params.productId;
 
-        await productService.remove(productId);
+        const productRemove = await productService.remove(productId);
+        const existingFilePath = path.join(process.cwd(), "src/public/uploads", productRemove.image);
+
+        if (fs.existsSync(existingFilePath)) {
+            fs.unlinkSync(existingFilePath);
+        }
+
         res.status(200).json({
             status: 200,
             message: "success delete product",

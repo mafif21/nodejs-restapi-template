@@ -2,6 +2,7 @@ import Joi from "joi";
 
 const createProductValidation = Joi.object({
     name: Joi.string().max(100).required(),
+    image: Joi.string().max(100).required(),
     price: Joi.number().greater(0).required(),
     categoryId: Joi.string().guid().required(),
 })
@@ -9,6 +10,7 @@ const createProductValidation = Joi.object({
 const updateProductValidation = Joi.object({
     id: Joi.string().guid().required(),
     name: Joi.string().max(100).required(),
+    image: Joi.string().max(100).optional(),
     price: Joi.number().greater(0).required(),
     categoryId: Joi.string().guid().required(),
 });
