@@ -1,4 +1,3 @@
-import {ResponseError} from "../error/response-error.js";
 import categoryService from "../service/category-service.js";
 
 export const createCategory = async (req, res, next) => {
@@ -14,6 +13,7 @@ export const createCategory = async (req, res, next) => {
         next(e)
     }
 }
+
 export const getCategories = async (req, res, next) => {
     try{
         const request = {

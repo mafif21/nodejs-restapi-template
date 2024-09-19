@@ -73,6 +73,13 @@ const getDetail = async(categoryId) => {
         select:{
             id: true,
             name: true,
+            products: {
+                select: {
+                    id: true,
+                    name: true,
+                    price: true,
+                }
+            },
             createdAt: true,
             updatedAt: true,
         }

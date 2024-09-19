@@ -88,13 +88,16 @@ const login = async(request) => {
 const logout = async(request) => {
     const decode = jwt.verify(request, process.env.JWT_SECRET)
 
+    const expirationDate = new Date();
+    expirationDate.setHours(expirationDate.getHours() - 1);
+
     return prismaClient.user.update({
         where: {
             email: decode.email
         },
         data:{
             token: null,
-            tokenExpiration: new Date()
+            tokenExpiration: expirationDate
         },
     })
 }

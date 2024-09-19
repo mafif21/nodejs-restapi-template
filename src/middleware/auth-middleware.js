@@ -26,6 +26,13 @@ export const authMiddleware = async (req, res, next) => {
             }).end();
         }
 
+        if (user.token === null || new Date(user.tokenExpiration) < new Date()) {
+            return res.status(401).json({
+                status: 401,
+                message: "Unauthorized: Token expired or logged out"
+            }).end();
+        }
+
         req.user = user;
         next();
     } catch (err) {
