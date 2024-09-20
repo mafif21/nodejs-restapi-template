@@ -8,6 +8,11 @@
     "dev": "nodemon src/main.js",
     "test": "jest -i"
   },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    }
+  },
   "keywords": [],
   "author": "Apip",
   "license": "ISC",
